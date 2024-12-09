@@ -64,13 +64,13 @@ namespace e2eApiTests
 
             var updatedBlogContent = JObject.Parse(updateBlogResponse.Content);
             Assert.That(updatedBlogContent["_id"].ToString(), Is.EqualTo(blogId),
-                "Updated blog ID is not equal to blogId");
+                "Updated blog ID does not equal to blogId");
             Assert.That(updatedBlogContent["title"].ToString(), Is.EqualTo("Updated Blog Post"),
-                "Update blog title not match the input");
+                "Updated blog title does not match the input");
             Assert.That(updatedBlogContent["description"].ToString(), Is.EqualTo("This is an updated blog post content"),
-                "Update blog description not match the input");
+                "Updated blog description does not match the input");
             Assert.That(updatedBlogContent["category"].ToString(), Is.EqualTo("Technology"),
-                "Update blog category not match original input");
+                "Updated blog category does not match original input");
 
             // Delete last created blog
             var deleteBlogRequest = new RestRequest("/blog/{id}");
@@ -122,9 +122,9 @@ namespace e2eApiTests
             deleteBlogRequest.AddHeader("Authorization", $"Bearer {invalidToken}");
 
             var deleteBlogResponse = client.Execute(deleteBlogRequest, Method.Delete);
-            Assert.That(getBlogResponse.IsSuccessful, Is.False,
+            Assert.That(deleteBlogResponse.IsSuccessful, Is.False,
                 "Response is successful");
-            Assert.That(getBlogResponse.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError),
+            Assert.That(deleteBlogResponse.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError),
                 "Response status is not internal server error");
         }
 

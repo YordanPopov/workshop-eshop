@@ -22,7 +22,7 @@ namespace e2eApiTests
         {
             client = new RestClient(GlobalConstants.BaseUrl);
             adminToken = GlobalConstants.AuthenticateUser("admin@gmail.com", "admin@gmail.com");
-            userToken = GlobalConstants.AuthenticateUser("jordan@gmail.com", "jordan@gmail.com");
+            userToken = GlobalConstants.AuthenticateUser("johndoe@example.com", "password123");
             Assert.That(adminToken, Is.Not.Null.Or.Empty,
                 "Authentication token is null or empty");
             Assert.That(userToken, Is.Not.Null.Or.Empty,

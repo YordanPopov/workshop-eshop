@@ -3,6 +3,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -76,6 +77,54 @@ namespace e2eApiTests
             Assert.That(deleteCategoryResponse.IsSuccessful, Is.True,
                 "Deleting category failed!");
         }
+
+        [Test]
+        public void CategoryLifecycleNegativeTest()
+        {
+            string invalidToken = "InvaliToken";
+            string invalidId = "InvalidId";
+
+            var createCategoryRequest = new RestRequest("/category");
+            createCategoryRequest.AddHeader("Authorization", $"Bearer {invalidToken}");
+            createCategoryRequest.AddJsonBody(new { Title = "Test Category" });
+
+            var createCategoryResponse = client.Execute(createCategoryRequest, Method.Post);
+            Assert.That(createCategoryResponse.IsSuccessful, Is.False,
+                "Creating category is successful");
+            Assert.That(createCategoryResponse.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError),
+                "Response status code is not Internal Server Error");
+
+            var getCategoryRequest = new RestRequest("/category/{id}");
+            getCategoryRequest.AddUrlSegment("id", invalidId);
+
+            var getCategoryResponse = client.Execute(getCategoryRequest, Method.Get);
+            Assert.That(getCategoryResponse.IsSuccessful, Is.False,
+                "Getting category is successful");
+            Assert.That(getCategoryResponse.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError),
+                "Response status code is not Internal Server Error");
+
+            var updateCategoryRequest = new RestRequest("/category/{id}");
+            updateCategoryRequest.AddHeader("Authorization", $"Bearer {invalidToken}");
+            updateCategoryRequest.AddUrlSegment("id", invalidId);
+            updateCategoryRequest.AddJsonBody(new { Title = "Updated Category" } );
+
+            var updateCategoryResponse = client.Execute(updateCategoryRequest, Method.Put);
+            Assert.That(updateCategoryResponse.IsSuccessful, Is.False,
+                "Updating category is successful");
+            Assert.That(updateCategoryResponse.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError),
+                "Response status code is not Internal Server Error");
+
+            var deleteCategoryRequest = new RestRequest("/category/{id}");
+            deleteCategoryRequest.AddHeader("Authorization", $"Bearer {invalidToken}");
+            deleteCategoryRequest.AddUrlSegment("id", invalidId);
+
+            var deleteCategoryResponse = client.Execute(deleteCategoryRequest, Method.Delete);
+            Assert.That(deleteCategoryResponse.IsSuccessful, Is.False,
+                "Deleting category is successful");
+            Assert.That(deleteCategoryResponse.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError),
+                "Response status code is not Internal Server Error");
+        }
+
         public void Dispose()
         {
             client?.Dispose();
